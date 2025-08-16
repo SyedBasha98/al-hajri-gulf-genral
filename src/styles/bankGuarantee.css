@@ -1,0 +1,40 @@
+.bank-guarantee-tab {
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+.bg-form input,
+.bg-form select,
+.bg-form textarea {
+  display: block;
+  margin-bottom: 10px;
+  padding: 8px;
+  width: 100%;
+}
+
+.bg-form button {
+  margin-right: 10px;
+}
+
+.bg-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.bg-table th,
+.bg-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.bg-filter {
+  margin: 10px 0;
+  padding: 8px;
+  width: 300px;
+}
+
+.bg-warning {
+  background-color: #ffe0e0;
+}
