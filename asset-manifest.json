@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/al_hajri_gulf/static/css/main.c29dbd30.css",
+    "main.js": "/al_hajri_gulf/static/js/main.84162e1b.js",
+    "index.html": "/al_hajri_gulf/index.html",
+    "main.c29dbd30.css.map": "/al_hajri_gulf/static/css/main.c29dbd30.css.map",
+    "main.84162e1b.js.map": "/al_hajri_gulf/static/js/main.84162e1b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c29dbd30.css",
+    "static/js/main.84162e1b.js"
+  ]
+}
