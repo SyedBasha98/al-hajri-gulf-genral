@@ -1,15 +1,20 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPaymentFilter /*, createPaymentForSale*/ } from "../redux/slices/paymentsSlice"; // adjust path if needed
+import { setPaymentFilter, deletePayment } from "../redux/slices/paymentsSlice";
 import { exportToCsv, importFromCsv } from "../utils/csv";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function ToolbarPayments({ rows, onImport }) {
   const fileRef = React.useRef(null);
   const onExport = () => {
     const flat = rows.map(r => ({
-      id:r.id, saleId:r.saleId, customer:r.customer, amount:r.amount,
-      status:r.status, date:r.date, voucherNo:r.receipt?.voucherNo || "",
+      id:r.id,
+      purchaseId:r.purchaseId || "",
+      supplier:r.supplier || "",
+      amount:r.amount,
+      status:r.status,
+      date:r.date,
+      voucherNo:r.receipt?.voucherNo || "",
       paymentType:r.receipt?.paymentType || ""
     }));
     exportToCsv("payments.csv", flat);
@@ -41,60 +46,67 @@ export default function Payments() {
   const nav = useNavigate();
   const dispatch = useDispatch();
   const { items, filters } = useSelector(s => s.payments);
-  const q = (filters.q || "").toLowerCase();
 
-  const filtered = items.filter(p =>
-    (filters.status==="ALL" || p.status===filters.status) &&
-    [p.customer, String(p.amount), p.saleId].join(" ").toLowerCase().includes(q)
-  );
+  const q = (filters.q || "").toLowerCase();
+  // Only purchase payments here (ignore any legacy sale rows if present)
+  const filtered = items
+    .filter(p => p.type !== "sale")
+    .filter(p =>
+      (filters.status==="ALL" || p.status===filters.status) &&
+      [p.supplier, String(p.amount), p.purchaseId]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(q)
+    );
 
   return (
     <div className="page">
-      <h2>Payments</h2>
+      <h2>Payments (Purchases)</h2>
 
       <ToolbarPayments
-        rows={items}
-        onImport={(rows)=>{
-          // Example: You can convert CSV rows into payments here if desired.
-          // For safety, leaving as no-op with an alert.
-          alert(`Loaded ${rows.length} CSV row(s). Map to create payments if you want.`);
-        }}
+        rows={filtered}
+        onImport={(rows)=>alert(`Loaded ${rows.length} CSV row(s).`)}
       />
 
       <div className="filters">
         <select className="input" value={filters.status} onChange={e=>dispatch(setPaymentFilter({status:e.target.value}))}>
           <option value="ALL">All</option><option>Unpaid</option><option>Paid</option>
         </select>
-        <input className="input" placeholder="Search" value={filters.q} onChange={e=>dispatch(setPaymentFilter({q:e.target.value}))}/>
+        <input className="input" placeholder="Search by supplier / purchase id / amount" value={filters.q} onChange={e=>dispatch(setPaymentFilter({q:e.target.value}))}/>
       </div>
 
       <div className="table-wrap">
         <table className="table">
-          <thead><tr><th>#</th><th>Sale ID</th><th>Customer</th><th>Amount</th><th>Status</th><th>Receipt</th><th>Action</th></tr></thead>
+          <thead>
+            <tr><th>#</th><th>Purchase ID</th><th>Supplier</th><th>Amount</th><th>Status</th><th>Actions</th></tr>
+          </thead>
           <tbody>
             {filtered.map((p,i)=>(
               <tr key={p.id}>
                 <td>{i+1}</td>
-                <td>{p.saleId}</td>
-                <td>{p.customer}</td>
+                <td>{p.purchaseId || "—"}</td>
+                <td>{p.supplier || "—"}</td>
                 <td>{p.amount}</td>
                 <td>{p.status}</td>
-                <td>
-                  {p.status==="Unpaid"
-                    ? <Link to={`/receipts/new?saleId=${p.saleId}`}>Create Receipt</Link>
-                    : (p.receipt?.voucherNo ? `Voucher: ${p.receipt.voucherNo}` : "—")}
-                </td>
-                <td>
+                <td style={{display:"flex", gap:8, flexWrap:"wrap"}}>
+                  <button className="btn" onClick={()=>nav(`/payments/receive?paymentId=${p.id}`)}>
+                    {p.status === "Unpaid" ? "Receive / Pay" : "Edit Payment"}
+                  </button>
                   <button
-                    className="btn primary"
-                    onClick={() => nav(`/payments/receive?paymentId=${p.id}`)}
+                    className="btn danger"
+                    onClick={()=>{
+                      if (window.confirm("Delete this payment?")) {
+                        dispatch(deletePayment(p.id));
+                      }
+                    }}
                   >
-                    {p.status === "Unpaid" ? "Receive" : "Edit Receipt"}
+                    Delete
                   </button>
                 </td>
               </tr>
             ))}
-            {filtered.length===0 && <tr><td colSpan={7} className="muted">No payments</td></tr>}
+            {filtered.length===0 && <tr><td colSpan={6} className="muted">No payments</td></tr>}
           </tbody>
         </table>
       </div>

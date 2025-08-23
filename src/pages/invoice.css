@@ -1,0 +1,139 @@
+/* ===== Invoice UI (Sales + Purchase) ===== */
+
+:root{
+  --inv-bg:#ffffff;
+  --inv-ink:#0f172a;
+  --inv-muted:#64748b;
+  --inv-line:#e2e8f0;
+  --inv-line-strong:#cbd5e1;
+  --inv-accent:#0b66ff;
+  --inv-soft: rgba(11,102,255,.08);
+
+  --inv-radius:16px;
+  --inv-radius-sm:12px;
+  --inv-shadow:0 12px 32px rgba(2,8,23,.08);
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --inv-bg:#0f1114;
+    --inv-ink:#e5e7eb;
+    --inv-muted:#94a3b8;
+    --inv-line:#1f2832;
+    --inv-line-strong:#2a3542;
+    --inv-soft: rgba(59,130,246,.12);
+  }
+}
+
+/* Container */
+.inv { --pad: clamp(12px, 2.2vw, 20px); }
+.inv-title { margin: 6px 0 12px; font-weight: 700; letter-spacing:.2px; }
+
+/* Card with crisp border */
+.inv-card{
+  border:1px solid var(--inv-line-strong);
+  border-radius: var(--inv-radius);
+  background: var(--inv-bg);
+  box-shadow: var(--inv-shadow);
+  padding: var(--pad);
+}
+
+/* Top toolbar look */
+.inv-toolbar{
+  border:1px solid var(--inv-line);
+  border-radius: var(--inv-radius-sm);
+  padding: 10px var(--pad);
+  background: linear-gradient(to bottom, rgba(2,8,23,.02), rgba(2,8,23,0));
+}
+
+/* Grid */
+.inv-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+}
+.inv-grid .span-2{ grid-column: 1 / -1; }
+
+/* Lines section (items) */
+.inv-lines{
+  border:1px dashed var(--inv-line-strong);
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(2,8,23,.02);
+}
+.inv-sec-title{
+  font-weight: 600;
+  color: var(--inv-muted);
+  margin-bottom: 6px;
+}
+
+/* A row with inputs */
+.inv-line, .inv-row{
+  display:grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.inv-row{ grid-template-columns: 1fr auto; }
+
+/* Footer area */
+.inv-footer{
+  display:flex; align-items:center; justify-content:space-between;
+  padding-top: 12px; margin-top: 10px;
+  border-top: 1px solid var(--inv-line);
+}
+
+/* Table frame */
+.inv-table .table{
+  border:1px solid var(--inv-line-strong);
+  border-radius: 12px;
+  overflow:hidden;
+}
+.inv-table thead th{
+  background: linear-gradient(to bottom, rgba(2,8,23,.04), rgba(2,8,23,0));
+  border-bottom:1px solid var(--inv-line-strong);
+}
+.inv-table td, .inv-table th{
+  border-bottom:1px solid var(--inv-line);
+}
+
+/* Inputs/buttons reuse your existing classes */
+.input{
+  border:1px solid var(--inv-line);
+  border-radius:10px;
+  padding:10px 12px;
+  background:var(--inv-bg);
+  color:var(--inv-ink);
+  outline:none;
+}
+.input:focus{
+  border-color: var(--inv-accent);
+  box-shadow: 0 0 0 3px var(--inv-soft);
+}
+
+.btn{
+  border:1px solid var(--inv-line-strong);
+  background:#f8fafc;
+  color:#0f172a;
+  padding:8px 12px;
+  border-radius:10px;
+  cursor:pointer;
+}
+.btn.primary{
+  background: var(--inv-accent);
+  border-color: var(--inv-accent);
+  color:#fff;
+}
+.btn.danger{
+  border-color:#fecaca;
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.muted{ color: var(--inv-muted); }
+
+/* Responsive */
+@media (max-width: 760px){
+  .inv-grid{ grid-template-columns: 1fr; }
+  .inv-line{ grid-template-columns: 1fr 1fr 1fr auto; }
+}

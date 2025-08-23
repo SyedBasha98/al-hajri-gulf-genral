@@ -1,50 +1,81 @@
 import { createSlice, nanoid } from "@reduxjs/toolkit";
 
-/**
- * payments.items
- * { id, saleId, customer, amount, status:'Unpaid'|'Paid', date,
- *   receipt?: { voucherNo, paymentType, date, docs[], chequeNo?, chequeBank?, lcNo?, lcBank? } }
- */
 const initialState = {
   items: [],
-  filters: { status: "ALL", q: "" }
+  filters: { status: "ALL", q: "" },
 };
 
-const slice = createSlice({
+const paymentsSlice = createSlice({
   name: "payments",
   initialState,
   reducers: {
+    setPaymentFilter(state, action) {
+      state.filters = { ...state.filters, ...action.payload };
+    },
+
+    // Create payment for a SALE
     createPaymentForSale: {
-      prepare(sale) {
+      prepare({ id, customer, amount, date }) {
         return {
           payload: {
-            id: "PM" + nanoid(6),
-            saleId: sale.id,
-            customer: sale.customer,
-            amount: sale.amount,
+            id: "PAY" + nanoid(6),
+            type: "sale",
+            saleId: id,
+            customer: customer || "",
+            amount: Number(amount || 0),
+            date: date || new Date().toISOString().slice(0, 10),
             status: "Unpaid",
-            date: sale.date
-          }
+            receipt: null,
+          },
         };
       },
       reducer(state, action) {
-        if (!state.items.find(p => p.saleId === action.payload.saleId)) {
-          state.items.push(action.payload);
-        }
-      }
+        state.items.push(action.payload);
+      },
     },
+
+    // Create payment for a PURCHASE
+    createPaymentForPurchase: {
+      prepare({ id, supplier, amount, date }) {
+        return {
+          payload: {
+            id: "PAY" + nanoid(6),
+            type: "purchase",
+            purchaseId: id,
+            supplier: supplier || "",
+            amount: Number(amount || 0),
+            date: date || new Date().toISOString().slice(0, 10),
+            status: "Unpaid",
+            receipt: null,
+          },
+        };
+      },
+      reducer(state, action) {
+        state.items.push(action.payload);
+      },
+    },
+
+    // Mark a payment Paid + save receipt/details
     markPaid(state, action) {
-      const i = state.items.findIndex(p => p.id === action.payload.id);
-      if (i !== -1) state.items[i] = action.payload;
+      const updated = action.payload; // should include { id, status, receipt, ... }
+      const idx = state.items.findIndex(p => p.id === updated.id);
+      if (idx !== -1) state.items[idx] = { ...state.items[idx], ...updated };
     },
+
+    // NEW: delete a payment (used for purchases "delete")
     deletePayment(state, action) {
-      state.items = state.items.filter(p => p.id !== action.payload);
+      const id = action.payload;
+      state.items = state.items.filter(p => p.id !== id);
     },
-    setPaymentFilter(state, action) {
-      state.filters = { ...state.filters, ...action.payload };
-    }
-  }
+  },
 });
 
-export const { createPaymentForSale, markPaid, deletePayment, setPaymentFilter } = slice.actions;
-export default slice.reducer;
+export const {
+  setPaymentFilter,
+  createPaymentForSale,
+  createPaymentForPurchase,
+  markPaid,
+  deletePayment,            // <- export
+} = paymentsSlice.actions;
+
+export default paymentsSlice.reducer;

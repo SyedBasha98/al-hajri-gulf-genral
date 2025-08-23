@@ -5,20 +5,29 @@ import bankGuarantees from "./slices/bankGuaranteeSlice";
 import sales from "./slices/salesSlice";
 import purchases from "./slices/purchasesSlice";
 import payments from "./slices/paymentsSlice";
+import receipts from "./slices/receiptsSlice"; // <-- add this
 
 const preloadedState = loadState();
 
-const store = configureStore({
-  reducer: { bankGuarantees, sales, purchases, payments },
-  preloadedState
+export const store = configureStore({
+  reducer: {
+    bankGuarantees,
+    sales,
+    purchases,
+    payments, // purchase payments
+    receipts, // sales receipts
+  },
+  preloadedState,
 });
 
 store.subscribe(() => {
+  const state = store.getState();
   saveState({
-    bankGuarantees: store.getState().bankGuarantees,
-    sales: store.getState().sales,
-    purchases: store.getState().purchases,
-    payments: store.getState().payments,
+    bankGuarantees: state.bankGuarantees,
+    sales: state.sales,
+    purchases: state.purchases,
+    payments: state.payments,
+    receipts: state.receipts,
   });
 });
 

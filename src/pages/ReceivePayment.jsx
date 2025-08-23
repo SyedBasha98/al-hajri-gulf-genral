@@ -1,12 +1,15 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { markPaid } from "../redux/slices/paymentsSlice"; // adjust path if needed
+import { markPaid } from "../redux/slices/paymentsSlice";
 import { pickFilesAsDataUrls } from "../utils/files";
 
 export default function ReceivePayment() {
   const nav = useNavigate();
-  const paymentId = new URLSearchParams(useLocation().search).get("paymentId");
+  const { paymentId: paymentIdFromPath } = useParams();
+  const qsPaymentId = new URLSearchParams(useLocation().search).get("paymentId");
+  const paymentId = paymentIdFromPath || qsPaymentId || "";
+
   const dispatch = useDispatch();
   const payment = useSelector(s => s.payments.items.find(p => p.id === paymentId));
 
@@ -21,8 +24,27 @@ export default function ReceivePayment() {
     docs: payment?.receipt?.docs || [],
   });
 
-  if (!payment) {
-    return <div className="page"><h2>Receive Payment</h2><div className="card">Payment not found.</div></div>;
+  React.useEffect(() => {
+    if (!payment) return;
+    setForm({
+      voucherNo: payment?.receipt?.voucherNo || "",
+      paymentType: payment?.receipt?.paymentType || "Cash",
+      chequeNo: payment?.receipt?.chequeNo || "",
+      chequeBank: payment?.receipt?.chequeBank || "",
+      lcNo: payment?.receipt?.lcNo || "",
+      lcBank: payment?.receipt?.lcBank || "",
+      date: payment?.receipt?.date || new Date().toISOString().slice(0,10),
+      docs: payment?.receipt?.docs || [],
+    });
+  }, [payment?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!paymentId || !payment) {
+    return (
+      <div className="page">
+        <h2>Receive Payment</h2>
+        <div className="card">Payment not found.</div>
+      </div>
+    );
   }
 
   const onChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));

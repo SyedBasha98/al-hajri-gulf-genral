@@ -2,7 +2,7 @@
   "name": "al_hajri_gulf",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://syedbasha98.github.io/al/hajri/gulf/genral",
+  "homepage": "https://syedbasha98.github.io/al-hajri-gulf-genral",
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.3",
     "react": "^18.2.0",
