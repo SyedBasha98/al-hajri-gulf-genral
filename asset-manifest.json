@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/al-hajri-gulf-genral/static/css/main.318d7c0b.css",
+    "main.css": "/al-hajri-gulf-genral/static/css/main.1ef455d4.css",
     "main.js": "/al-hajri-gulf-genral/static/js/main.a0e90661.js",
     "index.html": "/al-hajri-gulf-genral/index.html",
-    "main.318d7c0b.css.map": "/al-hajri-gulf-genral/static/css/main.318d7c0b.css.map",
+    "main.1ef455d4.css.map": "/al-hajri-gulf-genral/static/css/main.1ef455d4.css.map",
     "main.a0e90661.js.map": "/al-hajri-gulf-genral/static/js/main.a0e90661.js.map"
   },
   "entrypoints": [
-    "static/css/main.318d7c0b.css",
+    "static/css/main.1ef455d4.css",
     "static/js/main.a0e90661.js"
   ]
 }
